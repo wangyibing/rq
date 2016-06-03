@@ -34,6 +34,7 @@ class Queue(object):
     @classmethod
     def all(cls, connection=None):
         """Returns an iterable of all Queues.
+        返回redis中所有的queue的keys
         """
         connection = resolve_connection(connection)
 
@@ -59,6 +60,7 @@ class Queue(object):
         self.connection = resolve_connection(connection)
         prefix = self.redis_queue_namespace_prefix
         self.name = name
+        # key的命名
         self._key = '{0}{1}'.format(prefix, name)
         self._default_timeout = default_timeout
         self._async = async
@@ -81,6 +83,7 @@ class Queue(object):
 
     def empty(self):
         """Removes all messages on the queue."""
+        # 基于Lua脚本实现
         script = b"""
             local prefix = "rq:job:"
             local q = KEYS[1]
@@ -298,6 +301,7 @@ class Queue(object):
             if job_id is None:
                 break
             dependent = self.job_class.fetch(job_id, connection=self.connection)
+            # 对应了一个zset
             registry = DeferredJobRegistry(dependent.origin, self.connection)
             with self.connection._pipeline() as pipeline:
                 registry.remove(dependent, pipeline=pipeline)

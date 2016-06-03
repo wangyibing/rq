@@ -12,6 +12,9 @@ class InvalidJobOperationError(Exception):
 
 
 class UnpickleError(Exception):
+    """
+    反序列化错误
+    """
     def __init__(self, message, raw_data, inner_exception=None):
         super(UnpickleError, self).__init__(message, inner_exception)
         self.raw_data = raw_data

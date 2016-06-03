@@ -136,6 +136,7 @@ class Job(object):
         job.meta = meta or {}
 
         # dependency could be job instance or id
+        # 该任务依赖其它的任务
         if depends_on is not None:
             job._dependency_id = depends_on.id if isinstance(depends_on, Job) else depends_on
         return job

@@ -35,6 +35,7 @@ except ImportError:
     def setprocname(*args, **kwargs):  # noqa
         pass
 
+# 用指定的颜色高亮文字
 green = make_colorizer('darkgreen')
 yellow = make_colorizer('darkyellow')
 blue = make_colorizer('darkblue')
@@ -79,6 +80,7 @@ WorkerStatus = enum(
 
 class Worker(object):
     redis_worker_namespace_prefix = 'rq:worker:'
+    # redis set
     redis_workers_keys = 'rq:workers'
     death_penalty_class = UnixSignalDeathPenalty
     queue_class = Queue
@@ -93,6 +95,7 @@ class Worker(object):
         reported_working = connection.smembers(cls.redis_workers_keys)
         workers = [cls.find_by_key(as_text(key), connection)
                    for key in reported_working]
+        # 只是为了返回一个list
         return compact(workers)
 
     @classmethod
@@ -438,6 +441,7 @@ class Worker(object):
 
                     timeout = None if burst else max(1, self.default_worker_ttl - 60)
 
+                    # 处理任务
                     result = self.dequeue_job_and_maintain_ttl(timeout)
                     if result is None:
                         if burst:
